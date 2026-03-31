@@ -1,0 +1,35 @@
+    1  sudo apt upgrade -y
+    2  cd
+    3  sudo apt upgrade -y
+    4  sudo apt install curl docker.io
+    5  sudo apt update
+    6  curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+    7  docker --version
+    8  sudo systemctl start docker
+    9  docker run hello-world
+   10  newgrp docker
+   11  sudo usermod -aG docker $USER
+   12  su - $USER
+   13  mkdir meu-projeto-ci
+   14  cd meu-projeto-ci
+   15  git init
+   16  touch README.md
+   17  git add README.md
+   18  git commit -m "Commit inicial"
+   19  git config --global user.email 'reformedboni@gmail.com'
+   20  git user.name 'Refboni'
+   21  git config --global user.name 'Refboni'
+   22  git commit -m "Commit inicial"
+   23  mkdir -p .github/workflows
+   24  echo -e 'name: Hello Local\non: [push, workflow_dispatch]\njobs:\n  teste-basico:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Iniciando testes locais"\n      - run: node -v\n      - run: echo "Finalizado com sucesso!"' > .github/workflows/01-hello-local.yml
+   25  act -l
+   26  act -W .github/workflows/01-hello-local.yml | grep "|"
+   27  act -W .github/workflows/01-hello-local.yml
+   28  echo -e 'name: Hello Local\non: [push, workflow_dispatch]\njobs:\n  teste-basico:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Iniciando testes locais"\n      - run: node -v\n      - run: echo "Finalizado com sucesso!"' > .github/workflows/01-hello-local.yml
+   29  act -l
+   30  echo -e 'name: Pipeline Principal\non: push\njobs:\n  setup-e-lint:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Analisando qualidade do código..."\n  testes-unitarios:\n    needs: setup-e-lint\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Rodando testes unitários..."\n  scan-de-seguranca:\n    needs: setup-e-lint\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Procurando vulnerabilidades..."\n  build-e-deploy:\n    needs: [testes-unitarios, scan-de-seguranca]\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "Gerando artefato e fazendo deploy..."' > .github/workflows/02-pipeline-principal.yml
+   31  act -n
+   32  act -l
+   33  act -W .github/workflows/02-pipeline-principal.yml -P ubuntu-latest=node:slim
+   34  act -j scan-de-seguranca
+   35  history 50 > comandos.txt
